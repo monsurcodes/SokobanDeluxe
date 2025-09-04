@@ -1,11 +1,13 @@
 import pygame
 import os
+import sys
 from pytmx.util_pygame import load_pygame
 
 from settings import FPS, DISPLAY_RESOLUTION
 from player import Player
 from boxes import Box, CollisionBox
 
+from utils.save_game import load_game_level, save_game
 
 class Game:
     def __init__(self):
@@ -15,6 +17,9 @@ class Game:
         self.screen = pygame.display.set_mode(DISPLAY_RESOLUTION)
         self.clock = pygame.time.Clock()
         self.running = True
+        
+        # game settings
+        self.game_level = load_game_level()
 
         # all sprite groups
         self.all_sprites = pygame.sprite.Group()
@@ -26,8 +31,14 @@ class Game:
         
         self.setup_map()
 
-    def setup_map(self, level=1):
-        tmx_data = load_pygame(os.path.join("levels", f"{level}_level.tmx"))
+    def setup_map(self):
+        if not os.path.exists(os.path.join("levels", f"{self.game_level}_level.tmx")):
+            print("No more levels available. You've completed the game!")
+            self.running = False
+            pygame.quit()
+            sys.exit()
+            
+        tmx_data = load_pygame(os.path.join("levels", f"{self.game_level}_level.tmx"))
         
         # spawn player
         for obj in tmx_data.get_layer_by_name("BoxMarkers"):
@@ -64,6 +75,7 @@ class Game:
             # event loop
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    pygame.quit()
                     self.running = False
 
             # update
@@ -72,8 +84,16 @@ class Game:
             # draw
             self.screen.fill("grey")
             self.all_sprites.draw(self.screen)
+            
+            # check level completion
+            if self.player.level_completed:
+                print(f"Level {self.game_level} completed!")
+                self.all_sprites.empty()
+                self.box_sprites.empty()
+                self.collision_sprites.empty()
+                self.box_marker_points.clear()
+                self.running = False
+                save_game(self.game_level + 1)
 
             # update screen
             pygame.display.update()
-
-        pygame.quit()
