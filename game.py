@@ -9,6 +9,7 @@ from player import Player
 from boxes import Box, CollisionBox
 
 from utils.save_game import load_game_level, save_game
+from utils.button import Button
 
 class Game:
     def __init__(self):
@@ -28,6 +29,16 @@ class Game:
         
         # box marker points
         self.box_marker_points = []
+        
+        # restart stuff
+        self.restart_btn = Button(
+            image=pygame.image.load(os.path.join("assets", "button", "RestartRect.png")).convert_alpha(),
+            pos=(WIDTH - 120, 30),
+            text_input="Restart",
+            font=pygame.font.Font(os.path.join("assets", "fonts", "font.ttf"), 20),
+            base_color="#d7fcd4",
+            hovering_color="white",
+        )
         
         self.setup_map()
         
@@ -55,7 +66,6 @@ class Game:
             
             time.sleep(2) # wait for player to read message
             self.running = False
-            
             pygame.quit()
             sys.exit()
             
@@ -92,19 +102,32 @@ class Game:
         while self.running:
             # delta time
             dt = self.clock.tick(FPS) / 1000
+            
+            # mouse position
+            mouse_position = pygame.mouse.get_pos()
 
             # event loop
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
                     self.running = False
+                    
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.restart_btn.checkForInput(mouse_position):
+                        self.running = False
 
             # update
             self.all_sprites.update(dt)
 
             # draw
-            self.screen.fill("grey")
+            game_bg = pygame.image.load(os.path.join("assets", "images", "game_bg.jpg")).convert()
+            game_bg = pygame.transform.scale(game_bg, DISPLAY_RESOLUTION)
+            self.screen.blit(game_bg, (0, 0))
             self.all_sprites.draw(self.screen)
+            
+            # restart button
+            
+            self.restart_btn.changeColor(mouse_position)
+            self.restart_btn.update(self.screen)
             
             # check level completion
             if self.player.level_completed:
@@ -113,11 +136,11 @@ class Game:
                 # game over screen
                 self.display_text("Level Completed!", 32, "White", (WIDTH // 2, HEIGHT // 2))
 
-                time.sleep(2) # wait for player to read message
-                self.running = False
-                
                 # increment level
                 save_game(self.game_level + 1)
+                
+                time.sleep(2) # wait for player to read message
+                self.running = False
 
             # update screen
             pygame.display.update()
