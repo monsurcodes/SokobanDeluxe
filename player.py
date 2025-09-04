@@ -33,6 +33,9 @@ class Player(pygame.sprite.Sprite):
         # boxes
         self.box_groups = box_groups
         
+        # level completion
+        self.level_completed = None
+        
 
     def input(self):
         # Only accept input if not currently moving
