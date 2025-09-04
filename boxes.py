@@ -134,10 +134,17 @@ class Box(pygame.sprite.Sprite):
             self.image = self.alt_surface
         else:
             self.image = self.surface
+            
+    def check_level_completion(self):
+        for point in self.marker_points:
+            if not any(box.rect.collidepoint(point) for box in self.same_type_boxes):
+                return False
+        return True
 
     def update(self, dt):
         self.move_with_player()
         self.check_marker_point()
+        self.player_sprite.level_completed = self.check_level_completion()
 
 
 class CollisionBox(pygame.sprite.Sprite):
