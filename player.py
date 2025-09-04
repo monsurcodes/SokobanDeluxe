@@ -19,7 +19,7 @@ class Player(pygame.sprite.Sprite):
         self.hitbox_rect = self.rect.inflate(-10, -10)
 
         # movement
-        self.speed = 2000
+        self.speed = 4000
         self.direction = pygame.math.Vector2(0, 0)
         
         # grid movement
