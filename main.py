@@ -1,15 +1,17 @@
 import pygame, sys, os
 
+from settings import DISPLAY_RESOLUTION
 from utils.button import Button
 from utils.save_game import load_game_level
 from game import Game
 
 pygame.init()
 
-SCREEN = pygame.display.set_mode((1280, 720))
-pygame.display.set_caption("Menu")
+SCREEN = pygame.display.set_mode(DISPLAY_RESOLUTION)
+pygame.display.set_caption("Sokoban Deluxe")
 
 BG = pygame.image.load(os.path.join("assets", "images", "Background.png"))
+BG = pygame.transform.scale(BG, DISPLAY_RESOLUTION)
 
 def get_font(size): # Returns Press-Start-2P in the desired size
     return pygame.font.Font(os.path.join("assets", "fonts", "font.ttf"), size)
@@ -51,15 +53,15 @@ def main_menu():
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-        MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
+        MENU_TEXT = get_font(74).render("Sokoban Deluxe", True, "#b68f40")
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
 
         PLAY_BUTTON = Button(image=pygame.image.load(os.path.join("assets", "button", "PlayRect.png")), pos=(640, 250), 
-                            text_input=f"PLAY Level {game_level}", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+                            text_input=f"PLAY Level {game_level}", font=get_font(24), base_color="#d7fcd4", hovering_color="White")
         OPTIONS_BUTTON = Button(image=pygame.image.load(os.path.join("assets", "button", "OptionsRect.png")), pos=(640, 400), 
-                            text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+                            text_input="OPTIONS", font=get_font(24), base_color="#d7fcd4", hovering_color="White")
         QUIT_BUTTON = Button(image=pygame.image.load(os.path.join("assets", "button", "QuitRect.png")), pos=(640, 550), 
-                            text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+                            text_input="QUIT", font=get_font(24), base_color="#d7fcd4", hovering_color="White")
 
         SCREEN.blit(MENU_TEXT, MENU_RECT)
 
